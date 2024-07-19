@@ -271,6 +271,25 @@ function messagesPopAllToHtml() {
 
 // --END (message functions)
 
+// Start TOTP functions --
+
+function dvwaTotpEnable() {
+	$dvwaSession =& dvwaSessionGrab();
+	$dvwaSession[ 'totp_enabled' ] = 1;
+}
+
+function dvwaTotpDisable() {
+	$dvwaSession =& dvwaSessionGrab();
+	unset( $dvwaSession[ 'totp_enabled' ] );
+}
+
+function dvwaIsTotpEnabled() {
+	$dvwaSession =& dvwaSessionGrab();
+	return ( isset( $dvwaSession[ 'totp_enabled' ] ) );
+}
+
+// --END (TOTP functions)
+
 function dvwaHtmlEcho( $pPage ) {
 	$menuBlocks = array();
 
@@ -279,6 +298,12 @@ function dvwaHtmlEcho( $pPage ) {
 		$menuBlocks[ 'home' ][] = array( 'id' => 'home', 'name' => 'Home', 'url' => '.' );
 		$menuBlocks[ 'home' ][] = array( 'id' => 'instructions', 'name' => 'Instructions', 'url' => 'instructions.php' );
 		$menuBlocks[ 'home' ][] = array( 'id' => 'setup', 'name' => 'Setup / Reset DB', 'url' => 'setup.php' );
+		if( dvwaIsTotpEnabled() ) {
+			$menuBlocks[ 'home' ][] = array( 'id' => 'totp_d', 'name' => 'Disable TOTP', 'url' => 'totp/disable/' );
+		}
+		else {
+			$menuBlocks[ 'home' ][] = array( 'id' => 'totp_e', 'name' => 'Enable TOTP', 'url' => 'totp/enable/' );
+		}
 	}
 	else {
 		$menuBlocks[ 'home' ][] = array( 'id' => 'setup', 'name' => 'Setup DVWA', 'url' => 'setup.php' );
