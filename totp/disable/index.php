@@ -11,10 +11,10 @@ $page[ 'page_id' ] = 'totp_d';
 dvwaDatabaseConnect();
 
 if( isset( $_POST[ 'totp_disable' ] ) ) {
-	// Check Anti-CSRF token
+        // Check Anti-CSRF token
         checkToken( $_REQUEST[ 'user_token' ], $_SESSION[ 'session_token' ], 'index.php' );
 
-	// Sanitise username input
+        // Sanitise username input
         $user = $_POST[ 'username' ];
         $user = stripslashes( $user );
         $user = ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"],  $user ) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
@@ -25,7 +25,7 @@ if( isset( $_POST[ 'totp_disable' ] ) ) {
         $pass = ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"],  $pass ) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
         $pass = md5( $pass );
 
-	// Check the database (if username matches the password)
+        // Check the database (if username matches the password)
         $data = $db->prepare( 'SELECT * FROM users WHERE user = (:user) AND password = (:password) LIMIT 1;' );
         $data->bindParam( ':user', $user, PDO::PARAM_STR);
         $data->bindParam( ':password', $pass, PDO::PARAM_STR );
@@ -42,10 +42,10 @@ if( isset( $_POST[ 'totp_disable' ] ) ) {
                 $data->bindParam( ':user', $user, PDO::PARAM_STR );
                 $data->execute();
 
-		// Disable totp in the session
-		dvwaTotpDisable();
+                // Disable totp in the session
+                dvwaTotpDisable();
 
-		// Leave page
+                // Leave page
                 dvwaRedirect( DVWA_WEB_PAGE_TO_ROOT . 'index.php' );
         } else {
                 // Authentication failed
@@ -65,15 +65,15 @@ $page[ 'body' ] .= "
 
         <!-- Create db button -->
         <form action=\"#\" method=\"post\">
-		Username:<br />
+                Username:<br />
                 <input type=\"text\" name=\"username\"><br />
                 Password:<br />
                 <input type=\"password\" AUTOCOMPLETE=\"off\" name=\"password\"><br />
                 <br />
 
                 <input name=\"totp_disable\" type=\"submit\" value=\"Confirm\">
-		" . tokenField() . "
-		{$html}
+                " . tokenField() . "
+                {$html}
         </form>
 </div>";
 
