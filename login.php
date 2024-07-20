@@ -1,5 +1,4 @@
 <?php
-#Hinal Test for Git
 define( 'DVWA_WEB_PAGE_TO_ROOT', '' );
 require_once DVWA_WEB_PAGE_TO_ROOT . 'dvwa/includes/dvwaPage.inc.php';
 
@@ -17,7 +16,6 @@ if( isset( $_POST[ 'Login' ] ) ) {
 
 	checkToken( $_REQUEST[ 'user_token' ], $session_token, 'login.php' );
 
-#aghila test for Git
 	$user = $_POST[ 'username' ];
 	$user = stripslashes( $user );
 	$user = ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"],  $user ) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
