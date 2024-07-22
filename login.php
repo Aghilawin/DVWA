@@ -6,6 +6,10 @@ dvwaPageStartup( array( ) );
 
 dvwaDatabaseConnect();
 
+require './vendor/autoload.php';
+
+use PragmaRX\Google2FA\Google2FA;
+
 if( isset( $_POST[ 'Login' ] ) ) {
 	// Anti-CSRF
 	if (array_key_exists ("session_token", $_SESSION)) {
@@ -37,10 +41,35 @@ if( isset( $_POST[ 'Login' ] ) ) {
 
 	$query  = "SELECT * FROM `users` WHERE user='$user' AND password='$pass';";
 	$result = @mysqli_query($GLOBALS["___mysqli_ston"],  $query ) or die( '<pre>' . ((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . '.<br />Try <a href="setup.php">installing again</a>.</pre>' );
+       	
+	
 	if( $result && mysqli_num_rows( $result ) == 1 ) {    // Login Successful...
-		dvwaMessagePush( "You have logged in as '{$user}'" );
-		dvwaLogin( $user );
-		dvwaRedirect( DVWA_WEB_PAGE_TO_ROOT . 'index.php' );
+                $row = mysqli_fetch_assoc($result);
+                $totp_enabled = $row['totp_enabled'];	
+	
+        	if ($totp_enabled == 0) {    
+                   dvwaMessagePush("You have logged in as '{$user}'");
+                   dvwaLogin($user);
+                   dvwaRedirect(DVWA_WEB_PAGE_TO_ROOT . 'index.php');
+		}else{
+		   dvwaLogin( $user );
+
+		   $_SESSION['g2fa_user'] = $user;
+
+                    // Initiate google2fa object
+                    $_g2fa = new Google2FA();
+
+                    // Generate a secret key 
+                    $secretkey = $row['totp_secret'];
+
+                   // This will provide us with the current password
+		   $current_otp = $_g2fa->getCurrentOtp($secretkey);
+		    dvwaMessagePush( $current_otp );
+		   
+                    $_SESSION['secret'] = $secretkey;	   	  
+		   dvwaRedirect(DVWA_WEB_PAGE_TO_ROOT . 'verify_totp.php');
+		}
+		
 	}
 
 	// Login failed

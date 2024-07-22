@@ -60,10 +60,23 @@ $encoded_qr_data = base64_encode($writer->writeString($qrCodeUrl));
 
 // This will provide us with the current password
 $current_otp = $_g2fa->getCurrentOtp($user->google2fa_secret);
+define( 'DVWA_WEB_PAGE_TO_ROOT', '' );
+require_once DVWA_WEB_PAGE_TO_ROOT . 'dvwa/includes/dvwaPage.inc.php';
+
 ?>
 
 <!-- HTML Code -->
 <div class="container">
+  <head>
+
+                <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />
+
+                <title>Login :: Damn Vulnerable Web Application (DVWA)</title>
+                <link rel=\"stylesheet\" type=\"text/css\" href=\"" . DVWA_WEB_PAGE_TO_ROOT . "dvwa/css/login.css\" />
+
+                
+
+        </head>
 <h1>Google Authenticator as 2FA with PHP Example</h1>
 <h2>QR Code</h2>
 <p><img src="data:image/png;base64,<?= $encoded_qr_data; ?>" alt="QR Code"></p>
