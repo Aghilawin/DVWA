@@ -1,13 +1,13 @@
 <?php
 
-define( 'DVWA_WEB_PAGE_TO_ROOT', '../../' );
-require_once DVWA_WEB_PAGE_TO_ROOT . 'dvwa/includes/dvwaPage.inc.php';
+define("DVWA_WEB_PAGE_TO_ROOT", "../../");
+require_once DVWA_WEB_PAGE_TO_ROOT . "dvwa/includes/dvwaPage.inc.php";
 
-dvwaPageStartup( array( 'authenticated' ) );
+dvwaPageStartup(["authenticated"]);
 
 $page = dvwaPageNewGrab();
-$page[ 'title' ]   = 'TOTP: Disable' . $page[ 'title_separator' ].$page[ 'title' ];
-$page[ 'page_id' ] = 'totp_d';
+$page["title"] = "TOTP: Disable" . $page["title_separator"] . $page["title"];
+$page["page_id"] = "totp_d";
 dvwaDatabaseConnect();
 
 //include packages for composer
@@ -25,15 +25,15 @@ $_g2fa = new Google2FA();
 
 $user_totp = dvwasessionGrab();
 if (!isset($_POST["totp_disable"])) {
-	 $data = $db->prepare( 'SELECT * FROM users WHERE user = (:user) ;' );
-        $data->bindParam( ':user', $user_totp["username"], PDO::PARAM_STR);
-	 $data->execute();
+    $data = $db->prepare("SELECT * FROM users WHERE user = (:user) ;");
+    $data->bindParam(":user", $user_totp["username"], PDO::PARAM_STR);
+    $data->execute();
 
-$raw = $data->fetch();
- $user_totp["totp_secret"] = $raw["totp_secret"];
+    $raw = $data->fetch();
+    $user_totp["totp_secret"] = $raw["totp_secret"];
 
     $_SESSION["g2fa_user"] = $user_totp;
-    
+
     // Generate a custom URL from user data to provide to qr code generator
     $qrCodeUrl = $_g2fa->getQRCodeUrl(
         "dvwa",
@@ -58,57 +58,83 @@ $raw = $data->fetch();
     // This will provide us with the current password
     $current_otp = $_g2fa->getCurrentOtp($user_totp["totp_secret"]);
 } else {
-
-if( isset( $_POST[ 'totp_disable' ] ) ) {
+    if (isset($_POST["totp_disable"])) {
         // Check Anti-CSRF token
-        checkToken( $_REQUEST[ 'user_token' ], $_SESSION[ 'session_token' ], 'index.php' );
+        checkToken(
+            $_REQUEST["user_token"],
+            $_SESSION["session_token"],
+            "index.php"
+        );
 
         // Sanitise username input
-        $user = $user_totp[ 'username' ];
-        $user = stripslashes( $user );
-        $user = ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"],  $user ) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
+        $user = $user_totp["username"];
+        $user = stripslashes($user);
+        $user =
+            isset($GLOBALS["___mysqli_ston"]) &&
+            is_object($GLOBALS["___mysqli_ston"])
+                ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $user)
+                : (trigger_error(
+                    "[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.",
+                    E_USER_ERROR
+                )
+                    ? ""
+                    : "");
 
         // Sanitise password input
-        $pass = $_POST[ 'password' ];
-        $pass = stripslashes( $pass );
-        $pass = ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"],  $pass ) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
-        $pass = md5( $pass );
+        $pass = $_POST["password"];
+        $pass = stripslashes($pass);
+        $pass =
+            isset($GLOBALS["___mysqli_ston"]) &&
+            is_object($GLOBALS["___mysqli_ston"])
+                ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $pass)
+                : (trigger_error(
+                    "[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.",
+                    E_USER_ERROR
+                )
+                    ? ""
+                    : "");
+        $pass = md5($pass);
 
         // Check the database (if username matches the password)
-        $data = $db->prepare( 'SELECT * FROM users WHERE user = (:user) AND password = (:password) LIMIT 1;' );
-        $data->bindParam( ':user', $user, PDO::PARAM_STR);
-        $data->bindParam( ':password', $pass, PDO::PARAM_STR );
+        $data = $db->prepare(
+            "SELECT * FROM users WHERE user = (:user) AND password = (:password) LIMIT 1;"
+        );
+        $data->bindParam(":user", $user, PDO::PARAM_STR);
+        $data->bindParam(":password", $pass, PDO::PARAM_STR);
         $data->execute();
         $row = $data->fetch();
 
         // If it's valid authentication...
-        if( ( $data->rowCount() == 1 )) {
-                // Get users details
-                $totp_enabled       = $row[ 'totp_enabled' ];
+        if ($data->rowCount() == 1) {
+            // Get users details
+            $totp_enabled = $row["totp_enabled"];
 
-                // Disable totp in the database
-                $data = $db->prepare( 'UPDATE users SET totp_enabled = 0,totp_secret=null WHERE user = (:user) LIMIT 1;' );
-                $data->bindParam( ':user', $user, PDO::PARAM_STR );
-                $data->execute();
+            // Disable totp in the database
+            $data = $db->prepare(
+                "UPDATE users SET totp_enabled = 0,totp_secret=null WHERE user = (:user) LIMIT 1;"
+            );
+            $data->bindParam(":user", $user, PDO::PARAM_STR);
+            $data->execute();
 
-                // Disable totp in the session
-                dvwaTotpDisable();
+            // Disable totp in the session
+            dvwaTotpDisable();
 
-                // Leave page
-                dvwaRedirect( DVWA_WEB_PAGE_TO_ROOT . 'index.php' );
+            // Leave page
+            dvwaRedirect(DVWA_WEB_PAGE_TO_ROOT . "index.php");
         } else {
-                // Authentication failed
+            // Authentication failed
 
-                // Give the user some feedback
-                $html .= "<pre><br />Username and/or password incorrect.<br /></pre>";
+            // Give the user some feedback
+            $html .=
+                "<pre><br />Username and/or password incorrect.<br /></pre>";
         }
-
-}
+    }
 }
 // Anti-CSRF
 generateSessionToken();
 
-$page[ 'body' ] .= "
+$page["body"] .=
+    "
 <div class=\"body_padded\">
 	<h1>Disable TOTP</h1>
         <p><img src=\"data:image/png;base64, $encoded_qr_data \" alt=\"QR Code\"></p>
@@ -123,11 +149,13 @@ $page[ 'body' ] .= "
                 <br />
 
                 <input name=\"totp_disable\" type=\"submit\" value=\"Confirm\">
-                " . tokenField() . "
+                " .
+    tokenField() .
+    "
                 {$html}
         </form>
 </div>";
 
-dvwaHtmlEcho( $page );
+dvwaHtmlEcho($page);
 
-	?>
+?>
