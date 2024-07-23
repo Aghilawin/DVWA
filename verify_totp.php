@@ -1,46 +1,42 @@
 <?php
-define( 'DVWA_WEB_PAGE_TO_ROOT', '' );
-require_once DVWA_WEB_PAGE_TO_ROOT . 'dvwa/includes/dvwaPage.inc.php';
+define("DVWA_WEB_PAGE_TO_ROOT", "");
+require_once DVWA_WEB_PAGE_TO_ROOT . "dvwa/includes/dvwaPage.inc.php";
 
 session_start();
 
 // Display All Errors (For Easier Development)
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+ini_set("display_errors", 1);
+ini_set("display_startup_errors", 1);
 error_reporting(E_ALL);
 
-require './vendor/autoload.php';
+require "./vendor/autoload.php";
 use PragmaRX\Google2FA\Google2FA;
 
-dvwaPageStartup( array( ) );
+dvwaPageStartup([]);
 
 dvwaDatabaseConnect();
 
-if( isset( $_POST[ 'verify' ] ) ) {
+if (isset($_POST["verify"])) {
+    $_g2fa = new Google2FA();
+    $key = $_SESSION["secret"];
+    $otp = $_POST["code"];
 
-        $_g2fa = new Google2FA();
-	$key = $_SESSION['secret'];
-        $otp = $_POST[ 'code' ];
+    // Verify provided OTP (Will return true or false)
+    $valid = $_g2fa->verifyKey($key, $otp);
 
-
-        // Verify provided OTP (Will return true or false)
-         $valid = $_g2fa->verifyKey($key, $otp);
-
-	if($valid)
-	{
-		dvwaRedirect( 'index.php' );
-	}
-	else{
-                dvwaMessagePush( 'Login failed' );
-		dvwaRedirect( 'login.php' );
-	}
+    if ($valid) {
+        dvwaRedirect("index.php");
+    } else {
+        dvwaMessagePush("Login failed");
+        dvwaRedirect("login.php");
+    }
 }
 
 $messagesHtml = messagesPopAllToHtml();
 
-Header( 'Cache-Control: no-cache, must-revalidate');    // HTTP/1.1
-Header( 'Content-Type: text/html;charset=utf-8' );      // TODO- proper XHTML headers...
-Header( 'Expires: Tue, 23 Jun 2009 12:00:00 GMT' );     // Date in the past
+Header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
+Header("Content-Type: text/html;charset=utf-8"); // TODO- proper XHTML headers...
+Header("Expires: Tue, 23 Jun 2009 12:00:00 GMT"); // Date in the past
 
 // Anti-CSRF
 generateSessionToken();
@@ -55,7 +51,9 @@ echo "<!DOCTYPE html>
 
 		<title>Login :: Damn Vulnerable Web Application (DVWA)</title>
 
-		<link rel=\"stylesheet\" type=\"text/css\" href=\"" . DVWA_WEB_PAGE_TO_ROOT . "dvwa/css/login.css\" />
+		<link rel=\"stylesheet\" type=\"text/css\" href=\"" .
+    DVWA_WEB_PAGE_TO_ROOT .
+    "dvwa/css/login.css\" />
 
 	</head>
 
@@ -67,7 +65,9 @@ echo "<!DOCTYPE html>
 
 	<br />
 
-	<p><img src=\"" . DVWA_WEB_PAGE_TO_ROOT . "dvwa/images/login_logo.png\" /></p>
+	<p><img src=\"" .
+    DVWA_WEB_PAGE_TO_ROOT .
+    "dvwa/images/login_logo.png\" /></p>
 
 	<br />
 
@@ -87,7 +87,9 @@ echo "<!DOCTYPE html>
 
 	</fieldset>
 
-	" . tokenField() . "
+	" .
+    tokenField() .
+    "
 
 	</form>
 
@@ -108,7 +110,12 @@ echo "<!DOCTYPE html>
 
 	<div id=\"footer\">
 
-	<p>" . dvwaExternalLinkUrlGet( 'https://github.com/digininja/DVWA/', 'Damn Vulnerable Web Application (DVWA)' ) . "</p>
+	<p>" .
+    dvwaExternalLinkUrlGet(
+        "https://github.com/digininja/DVWA/",
+        "Damn Vulnerable Web Application (DVWA)"
+    ) .
+    "</p>
 
 	</div> <!--<div id=\"footer\"> -->
 
