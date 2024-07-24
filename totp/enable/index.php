@@ -45,7 +45,7 @@ if (!isset($_POST["totp_enable"])) {
     $writer = new Writer($renderer);
 
     // This option is to store the QR Code image in the server
-    $writer->writeFile($qrCodeUrl, "qrcode.png");
+    $writer->WriteFile($qrCodeUrl, "totp/enable/qrcode.png");
 
     // This option will create a string with the image data and base64 enconde it
     $encoded_qr_data = base64_encode($writer->writeString($qrCodeUrl));
@@ -152,7 +152,7 @@ $page["body"] .=
 	<h1>Enable TOTP</h1>
         <p><img src=\"data:image/png;base64, $encoded_qr_data \" alt=\"QR Code\"></p>
         <p> QR code URL: $qrCodeUrl</p>
-        <p>One-time password at time of generation:  $current_otp </p>
+       
         <!-- Create db button -->
         <form action=\"#\" method=\"post\">
                Generate then enter code:<br />
@@ -169,5 +169,6 @@ $page["body"] .=
 </div>";
 
 dvwaHtmlEcho($page);
+//  <p>One-time password at time of generation:  $current_otp </p>
 
 ?>
