@@ -25,6 +25,7 @@ if (isset($_POST["verify"])) {
     $valid = $_g2fa->verifyKey($key, $otp);
 
     if ($valid) {
+	dvwalogin($_SESSION["g2fa_user"]);
         dvwaRedirect("index.php");
     } else {
         dvwaMessagePush("Login failed");
