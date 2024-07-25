@@ -25,26 +25,26 @@ if (isset($_POST["Login"])) {
     $user =
         isset($GLOBALS["___mysqli_ston"]) &&
         is_object($GLOBALS["___mysqli_ston"])
-            ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $user)
-            : (trigger_error(
-                "[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.",
-                E_USER_ERROR
-            )
-                ? ""
-                : "");
+        ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $user)
+        : (trigger_error(
+            "[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.",
+            E_USER_ERROR
+        )
+            ? ""
+            : "");
 
     $pass = $_POST["password"];
     $pass = stripslashes($pass);
     $pass =
         isset($GLOBALS["___mysqli_ston"]) &&
         is_object($GLOBALS["___mysqli_ston"])
-            ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $pass)
-            : (trigger_error(
-                "[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.",
-                E_USER_ERROR
-            )
-                ? ""
-                : "");
+        ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $pass)
+        : (trigger_error(
+            "[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.",
+            E_USER_ERROR
+        )
+            ? ""
+            : "");
     $pass = md5($pass);
 
     $query = "SELECT table_schema, table_name, create_time
@@ -59,15 +59,13 @@ if (isset($_POST["Login"])) {
 
     $query = "SELECT * FROM `users` WHERE user='$user' AND password='$pass';";
     ($result = @mysqli_query($GLOBALS["___mysqli_ston"], $query)) or
-        die(
-            "<pre>" .
-                (is_object($GLOBALS["___mysqli_ston"])
-                    ? mysqli_error($GLOBALS["___mysqli_ston"])
-                    : (($___mysqli_res = mysqli_connect_error())
-                        ? $___mysqli_res
-                        : false)) .
-                '.<br />Try <a href="setup.php">installing again</a>.</pre>'
-        );
+        die("<pre>" .
+            (is_object($GLOBALS["___mysqli_ston"])
+                ? mysqli_error($GLOBALS["___mysqli_ston"])
+                : (($___mysqli_res = mysqli_connect_error())
+                    ? $___mysqli_res
+                    : false)) .
+            '.<br />Try <a href="setup.php">installing again</a>.</pre>');
 
     if ($result && mysqli_num_rows($result) == 1) {
         // Login Successful...
@@ -79,19 +77,13 @@ if (isset($_POST["Login"])) {
             dvwaLogin($user);
             dvwaRedirect(DVWA_WEB_PAGE_TO_ROOT . "index.php");
         } else {
-           // dvwaLogin($user);
-
             $_SESSION["g2fa_user"] = $user;
 
             // Initiate google2fa object
             $_g2fa = new Google2FA();
 
-            // Generate a secret key
+            // Retrieve the user's secret key
             $secretkey = $row["totp_secret"];
-
-            // This will provide us with the current password
-            $current_otp = $_g2fa->getCurrentOtp($secretkey);
-            //dvwaMessagePush($current_otp);
 
             $_SESSION["secret"] = $secretkey;
             dvwaRedirect("verify_totp.php");
@@ -150,20 +142,17 @@ echo "<!DOCTYPE html>
 
 	<fieldset>
 
-			<label for=\"user\">Username</label> <input type=\"text\" class=\"loginInput\" size=\"20\" name=\"username\"><br />
+		<label for=\"user\">Username</label> <input type=\"text\" class=\"loginInput\" size=\"20\" name=\"username\"><br />
 
+		<label for=\"pass\">Password</label> <input type=\"password\" class=\"loginInput\" AUTOCOMPLETE=\"off\" size=\"20\" name=\"password\"><br />
 
-			<label for=\"pass\">Password</label> <input type=\"password\" class=\"loginInput\" AUTOCOMPLETE=\"off\" size=\"20\" name=\"password\"><br />
+		<br />
 
-			<br />
-
-			<p class=\"submit\"><input type=\"submit\" value=\"Login\" name=\"Login\"></p>
+		<p class=\"submit\"><input type=\"submit\" value=\"Login\" name=\"Login\"></p>
 
 	</fieldset>
 
-	" .
-    tokenField() .
-    "
+	" . tokenField() . "
 
 	</form>
 
@@ -198,5 +187,3 @@ echo "<!DOCTYPE html>
 	</body>
 
 </html>";
-
-?>
