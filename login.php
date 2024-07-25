@@ -79,7 +79,7 @@ if (isset($_POST["Login"])) {
             dvwaLogin($user);
             dvwaRedirect(DVWA_WEB_PAGE_TO_ROOT . "index.php");
         } else {
-            dvwaLogin($user);
+           // dvwaLogin($user);
 
             $_SESSION["g2fa_user"] = $user;
 
@@ -91,10 +91,10 @@ if (isset($_POST["Login"])) {
 
             // This will provide us with the current password
             $current_otp = $_g2fa->getCurrentOtp($secretkey);
-            dvwaMessagePush($current_otp);
+            //dvwaMessagePush($current_otp);
 
             $_SESSION["secret"] = $secretkey;
-            dvwaRedirect(DVWA_WEB_PAGE_TO_ROOT . "verify_totp.php");
+            dvwaRedirect("verify_totp.php");
         }
     }
 
