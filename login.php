@@ -79,9 +79,6 @@ if (isset($_POST["Login"])) {
         } else {
             $_SESSION["g2fa_user"] = $user;
 
-            // Initiate google2fa object
-            $_g2fa = new Google2FA();
-
             // Retrieve the user's secret key
             $secretkey = $row["totp_secret"];
 
