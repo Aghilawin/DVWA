@@ -72,17 +72,19 @@ if (isset($_POST["Login"])) {
         $row = mysqli_fetch_assoc($result);
         $totp_enabled = $row["totp_enabled"];
 
+        // If TOTP authentication is disabled, continue as normal
         if ($totp_enabled == 0) {
             dvwaMessagePush("You have logged in as '{$user}'");
             dvwaLogin($user);
             dvwaRedirect(DVWA_WEB_PAGE_TO_ROOT . "index.php");
         } else {
+            // Otherwise use a second factor for authentication
             $_SESSION["g2fa_user"] = $user;
 
             // Retrieve the user's secret key
             $secretkey = $row["totp_secret"];
-
             $_SESSION["secret"] = $secretkey;
+
             dvwaRedirect("verify_totp.php");
         }
     }
